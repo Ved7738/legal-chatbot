@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Legal Advisor</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<div class="chat-container">
+
+    <!-- Chat Header -->
+    <header class="chat-header">
+        <h1>⚖️ AI Legal Advisor</h1>
+        
+        <div class="header-controls">
+            <div class="status">🟢 Online</div>
+            <button class="clear-btn" onclick="clearChat()">🧹 Clear Chat</button>
+        </div>
+    </header>
+
+    <!-- Chat Box -->
+    <div class="chat-box" id="chat-box">
+        <div class="message bot">
+            <div class="avatar">🤖</div>
+            <div class="content">Hello! How can I assist you today?</div>
+        </div>
+    </div>
+
+    <!-- Input Section -->
+    <div class="chat-input">
+        <input type="text" id="user-input" placeholder="Type your message..." onkeydown="handleKeyPress(event)" />
+        <button onclick="sendMessage()">➤</button>
+    </div>
+</div>
+
+<script>
+    async function sendMessage() {
+        const inputField = document.getElementById('user-input');
+        const message = inputField.value.trim();
+
+        if (message === '') return;
+
+        const chatBox = document.getElementById('chat-box');
+
+        // Display user message
+        const userMessage = document.createElement('div');
+        userMessage.className = 'message user';
+        userMessage.innerHTML = `
+            <div class="avatar">👤</div>
+            <div class="content">${message}</div>
+        `;
+        chatBox.appendChild(userMessage);
+
+        inputField.value = '';
+
+        // Automatically scroll to the bottom
+        chatBox.scrollTop = chatBox.scrollHeight;
+
+        // Send message to server
+        const formData = new FormData();
+        formData.append('msg', message);
+
+        try {
+            const response = await fetch('/get', {
+                method: 'POST',
+                body: formData
+            });
+
+            const botMessageText = await response.text();
+
+            // Display bot response
+            const botMessage = document.createElement('div');
+            botMessage.className = 'message bot';
+            botMessage.innerHTML = `
+                <div class="avatar">🤖</div>
+                <div class="content">${botMessageText}</div>
+            `;
+            chatBox.appendChild(botMessage);
+
+            // Auto-scroll to the bottom after bot response
+            chatBox.scrollTop = chatBox.scrollHeight;
+
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    }
+
+    function handleKeyPress(event) {
+        if (event.key === "Enter") {
+            sendMessage();
+        }
+    }
+
+    // 🧹 Clear Chat Function
+    function clearChat() {
+        const chatBox = document.getElementById('chat-box');
+        chatBox.innerHTML = `
+            <div class="message bot">
+                <div class="avatar">🤖</div>
+                <div class="content">How can I assist you today?</div>
+            </div>
+        `;
+
+        // Auto-scroll to the bottom after clearing chat
+        chatBox.scrollTop = chatBox.scrollHeight;
+    }
+</script>
+
+</body>
+</html>
