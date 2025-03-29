@@ -13,7 +13,6 @@ list_of_files = [
     '.gitignore',
     'LICENCE',
     'README.md',
-    'requirements.txt',
     'setup.py',
     'template.py',
     'app.py',

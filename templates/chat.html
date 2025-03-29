@@ -16,9 +16,12 @@
     <header class="chat-header">
         <h1>⚖️ AI Legal Advisor</h1>
         
-        <div class="header-controls">
-            <div class="status">🟢 Online</div>
-            <button class="clear-btn" onclick="clearChat()">🧹 Clear Chat</button>
+        <!-- Top-right menu with Clear Chat -->
+        <div class="menu">
+            <div class="menu-icon" onclick="toggleMenu()">☰</div>
+            <div class="dropdown" id="dropdown">
+                <button class="clear-btn" onclick="clearChat()">🧹 Clear Chat</button>
+            </div>
         </div>
     </header>
 
@@ -104,9 +107,23 @@
                 <div class="content">How can I assist you today?</div>
             </div>
         `;
-
-        // Auto-scroll to the bottom after clearing chat
         chatBox.scrollTop = chatBox.scrollHeight;
+    }
+
+    // Dropdown Menu Toggle
+    function toggleMenu() {
+        const dropdown = document.getElementById('dropdown');
+        dropdown.classList.toggle('show');
+    }
+
+    // Close the menu when clicking outside
+    window.onclick = function(event) {
+        if (!event.target.matches('.menu-icon')) {
+            const dropdown = document.getElementById('dropdown');
+            if (dropdown.classList.contains('show')) {
+                dropdown.classList.remove('show');
+            }
+        }
     }
 </script>
 

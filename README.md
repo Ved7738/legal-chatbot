@@ -13,8 +13,7 @@ python -m venv lawbot
 
 ### Step 3:
 3) Install the requirements
-pip install -r requirements.txt
-
+pip install -e .
 
 ### Step 4:
 4) Install embedding model from hugging face
@@ -25,3 +24,6 @@ sentence-transformers/all-MiniLM-L6-v2 (This model will generate 384 dimensional
 
 ### Step 6:
 6) Create groq account to use llm (we are using llama3-8b-8192 model)
+
+### Step 7:
+7) Dataset link: https://drive.google.com/drive/folders/1iwhpGZ__NUcSC1eDyoslQOC5SyJO59-r?usp=drive_link
