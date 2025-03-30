@@ -47,7 +47,7 @@ pip install -e .
 
 ### ✅ **Step 4: Install Sentence Transformer Model from Hugging Face**
 Download the **Hugging Face** embedding model:
-sentence-transformers/all-MiniLM-L6-v2
+- **sentence-transformers/all-MiniLM-L6-v2**
 - This model generates **384-dimensional embeddings**.
 
 ---
