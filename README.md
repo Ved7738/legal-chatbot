@@ -27,3 +27,7 @@ sentence-transformers/all-MiniLM-L6-v2 (This model will generate 384 dimensional
 
 ### Step 7:
 7) Dataset link: https://drive.google.com/drive/folders/1iwhpGZ__NUcSC1eDyoslQOC5SyJO59-r?usp=drive_link
+
+
+### Step 8:
+8) Run command (python app.py) in vs code terminal

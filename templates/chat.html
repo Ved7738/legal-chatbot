@@ -5,126 +5,870 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AI Legal Advisor</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="./style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <meta name="theme-color" content="#0a192f">
 </head>
 <body>
 
-<div class="chat-container">
-
-    <!-- Chat Header -->
-    <header class="chat-header">
-        <h1>⚖️ AI Legal Advisor</h1>
-        
-        <!-- Top-right menu with Clear Chat -->
-        <div class="menu">
-            <div class="menu-icon" onclick="toggleMenu()">☰</div>
-            <div class="dropdown" id="dropdown">
-                <button class="clear-btn" onclick="clearChat()">🧹 Clear Chat</button>
-            </div>
+<!-- Main Container with Sidebar and Chat -->
+<div class="app-container">
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <button class="new-chat-btn" id="new-chat-btn">
+                <i class="fas fa-plus"></i> New Chat
+            </button>
+            <!-- Removed the close sidebar button with X icon -->
         </div>
-    </header>
 
-    <!-- Chat Box -->
-    <div class="chat-box" id="chat-box">
-        <div class="message bot">
-            <div class="avatar">🤖</div>
-            <div class="content">Hello! How can I assist you today?</div>
+        <div class="sidebar-categories">
+            <div class="category active" data-category="all">All Chats</div>
+            <div class="category" data-category="personal">Personal</div>
+            <div class="category" data-category="business">Business</div>
+        </div>
+        
+        <div class="sidebar-search">
+            <input type="text" id="search-chats" placeholder="Search chats...">
+            <i class="fas fa-search"></i>
+        </div>
+        
+        <div class="saved-chats" id="saved-chats">
+            <!-- Saved chats will be populated here -->
+        </div>
+
+        <div class="sidebar-footer">
+            <div class="theme-toggle">
+                <span>Dark Mode</span>
+                <label class="switch">
+                    <input type="checkbox" id="theme-toggle-btn">
+                    <span class="slider round"></span>
+                </label>
+            </div>
+            <div class="user-info">
+                <div class="user-avatar">
+                    <i class="fas fa-user"></i>
+                </div>
+                <div class="user-details">
+                    <div class="user-name">User Profile</div>
+                </div>
+            </div>
         </div>
     </div>
 
-    <!-- Input Section -->
-    <div class="chat-input">
-        <input type="text" id="user-input" placeholder="Type your message..." onkeydown="handleKeyPress(event)" />
-        <button onclick="sendMessage()">➤</button>
+    <!-- Sidebar Toggle Button -->
+    <button class="sidebar-toggle" id="sidebar-toggle">
+        <i class="fas fa-bars"></i>
+    </button>
+
+    <!-- Chat Container -->
+    <div class="chat-container">
+        <!-- Header Section -->
+        <div class="chat-header">
+            <div class="left-actions">
+                <button class="new-chat-btn" id="header-new-chat-btn" title="New Chat">
+                    <i class="fas fa-plus"></i>
+                </button>
+            </div>
+            
+            <!-- Title with Logo -->
+            <div class="header-title-container" onclick="showWelcomeMessage()">
+                <div class="header-logo"><i class="fas fa-balance-scale"></i></div>
+                <div class="header-title">AI LEGAL ADVISOR</div>
+            </div>
+            
+            <div class="right-actions">
+                <button id="export-chat-btn" title="Export Chat">
+                    <i class="fas fa-download"></i>
+                </button>
+                <div class="menu">
+                    <div class="menu-icon"><i class="fas fa-ellipsis-vertical"></i></div>
+                    <div class="dropdown">
+                        <button id="clear-chat">
+                            <i class="fas fa-trash"></i> Clear Chat
+                        </button>
+                        <button id="toggle-timestamps">
+                            <i class="fas fa-clock"></i> Toggle Timestamps
+                        </button>
+                        <button id="help-btn">
+                            <i class="fas fa-question-circle"></i> Help
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Chat Box -->
+        <div id="chat-box" class="chat-box">
+            <div class="message bot">
+                <div class="avatar bot-avatar">
+                    <i class="fas fa-robot"></i>
+                </div>
+                <div class="message-container">
+                    <div class="message-header">
+                        <span class="sender-name">AI Legal Advisor</span>
+                        <span class="timestamp" style="display: none;">Today, 00:00</span>
+                    </div>
+                    <div class="content bot-content">Hello! I'm your AI Legal Advisor. How can I assist you today?</div>
+                    <div class="message-actions">
+                        <button class="copy-btn" title="Copy to clipboard">
+                            <i class="fas fa-copy"></i>
+                        </button>
+                        <button class="thumbs-up-btn" title="Helpful">
+                            <i class="far fa-thumbs-up"></i>
+                        </button>
+                        <button class="thumbs-down-btn" title="Not helpful">
+                            <i class="far fa-thumbs-down"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Category Label (when chat begins) -->
+        <div class="category-label" id="category-label" style="display: none;">
+            <span id="category-text">Personal</span>
+            <button id="change-category">
+                <i class="fas fa-pen"></i>
+            </button>
+        </div>
+
+        <!-- Input Section -->
+        <div class="chat-input">
+            <div class="input-container">
+                <input type="text" id="user-input" placeholder="Type a message..." onkeydown="handleKeyPress(event)">
+                <div class="input-actions">
+                    <button id="attach-btn" title="Attach file">
+                        <i class="fas fa-paperclip"></i>
+                    </button>
+                    <button id="voice-btn" title="Voice input">
+                        <i class="fas fa-microphone"></i>
+                    </button>
+                </div>
+            </div>
+            <button id="send-btn">
+                <i class="fas fa-paper-plane"></i>
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Help Modal -->
+<div id="help-modal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2>AI Legal Advisor Help</h2>
+            <span class="close-modal">&times;</span>
+        </div>
+        <div class="modal-body">
+            <h3>Getting Started</h3>
+            <p>Welcome to AI Legal Advisor! This application helps you get basic legal information and guidance.</p>
+            
+            <h3>Features:</h3>
+            <ul>
+                <li><strong>New Chat:</strong> Start a fresh conversation with the AI.</li>
+                <li><strong>Saved Chats:</strong> Access your previous conversations from the sidebar.</li>
+                <li><strong>Categories:</strong> Organize your chats by personal or business topics.</li>
+                <li><strong>Dark Mode:</strong> Toggle between light and dark themes for comfortable viewing.</li>
+                <li><strong>Export:</strong> Download your conversation for your records.</li>
+            </ul>
+            
+            <h3>Disclaimer:</h3>
+            <p>The AI Legal Advisor provides general information only and is not a substitute for professional legal advice. Always consult with a qualified attorney for specific legal matters.</p>
+        </div>
+    </div>
+</div>
+
+<!-- Category Modal -->
+<div id="category-modal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2>Select Category</h2>
+            <span class="close-modal">&times;</span>
+        </div>
+        <div class="modal-body">
+            <div class="category-options">
+                <div class="category-option" data-category="personal">
+                    <i class="fas fa-user"></i> Personal
+                </div>
+                <div class="category-option" data-category="business">
+                    <i class="fas fa-briefcase"></i> Business
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 
 <script>
-    async function sendMessage() {
-        const inputField = document.getElementById('user-input');
-        const message = inputField.value.trim();
-
-        if (message === '') return;
-
-        const chatBox = document.getElementById('chat-box');
-
-        // Display user message
-        const userMessage = document.createElement('div');
-        userMessage.className = 'message user';
-        userMessage.innerHTML = `
-            <div class="avatar">👤</div>
-            <div class="content">${message}</div>
-        `;
-        chatBox.appendChild(userMessage);
-
-        inputField.value = '';
-
-        // Automatically scroll to the bottom
-        chatBox.scrollTop = chatBox.scrollHeight;
-
-        // Send message to server
-        const formData = new FormData();
-        formData.append('msg', message);
-
-        try {
-            const response = await fetch('/get', {
-                method: 'POST',
-                body: formData
+    document.addEventListener("DOMContentLoaded", () => {
+        const dropdown = document.querySelector(".dropdown");
+        const menuIcon = document.querySelector(".menu-icon");
+        const clearChatBtn = document.getElementById("clear-chat");
+        const toggleTimestampsBtn = document.getElementById("toggle-timestamps");
+        const exportChatBtn = document.getElementById("export-chat-btn");
+        const chatBox = document.getElementById("chat-box");
+        const userInput = document.getElementById("user-input");
+        const sendBtn = document.getElementById("send-btn");
+        const sidebar = document.getElementById("sidebar");
+        const sidebarToggle = document.getElementById("sidebar-toggle");
+        // Removed the closeSidebarBtn reference
+        const newChatBtn = document.getElementById("new-chat-btn");
+        const headerNewChatBtn = document.getElementById("header-new-chat-btn");
+        const savedChats = document.getElementById("saved-chats");
+        const searchInput = document.getElementById("search-chats");
+        const categoryButtons = document.querySelectorAll(".category");
+        const helpBtn = document.getElementById("help-btn");
+        const helpModal = document.getElementById("help-modal");
+        const categoryLabel = document.getElementById("category-label");
+        const changeCategoryBtn = document.getElementById("change-category");
+        const categoryModal = document.getElementById("category-modal");
+        const categoryOptions = document.querySelectorAll(".category-option");
+        const categoryText = document.getElementById("category-text");
+        const themeToggleBtn = document.getElementById("theme-toggle-btn");
+        const voiceBtn = document.getElementById("voice-btn");
+        const attachBtn = document.getElementById("attach-btn");
+        
+        // Initialize with system preference for dark mode
+        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            document.body.classList.add('dark-mode');
+            themeToggleBtn.checked = true;
+        }
+        
+        let activeChat = {
+            id: Date.now(),
+            title: "New Chat",
+            category: "personal", // Changed default to personal
+            messages: [{
+                content: "Hello! I'm your AI Legal Advisor. How can I assist you today?",
+                sender: "bot",
+                timestamp: new Date().toLocaleString()
+            }]
+        };
+        
+        let showTimestamps = false;
+        let savedChatsData = JSON.parse(localStorage.getItem('legalAdvisorChats')) || [];
+        let currentFilter = 'all';
+        
+        // Enhanced sidebar toggle functionality
+        sidebarToggle.addEventListener("click", () => {
+            sidebar.classList.toggle("open");
+            document.body.classList.toggle("sidebar-collapsed");
+            
+            // Save sidebar state to localStorage
+            localStorage.setItem('sidebarState', sidebar.classList.contains('open') ? 'open' : 'closed');
+        });
+        
+        // Initialize sidebar state from localStorage on page load
+        const savedSidebarState = localStorage.getItem('sidebarState');
+        if (savedSidebarState === 'closed' || (window.innerWidth <= 768 && savedSidebarState !== 'open')) {
+            sidebar.classList.remove("open");
+            document.body.classList.add("sidebar-collapsed");
+        } else {
+            sidebar.classList.add("open");
+            document.body.classList.remove("sidebar-collapsed");
+        }
+        
+        // Removed the close sidebar button event listener
+        
+        // Theme toggle
+        themeToggleBtn.addEventListener("change", function() {
+            document.body.classList.toggle('dark-mode');
+            localStorage.setItem('darkMode', document.body.classList.contains('dark-mode'));
+        });
+        
+        // Load dark mode setting
+        if (localStorage.getItem('darkMode') === 'true') {
+            document.body.classList.add('dark-mode');
+            themeToggleBtn.checked = true;
+        }
+        
+        // Initialize the sidebar with saved chats
+        function initializeSidebar() {
+            savedChats.innerHTML = '';
+            
+            // Filter chats based on current category filter
+            let filteredChats = savedChatsData;
+            if (currentFilter !== 'all') {
+                filteredChats = savedChatsData.filter(chat => chat.category === currentFilter);
+            }
+            
+            // Filter by search term if present
+            const searchTerm = searchInput.value.toLowerCase().trim();
+            if (searchTerm !== '') {
+                filteredChats = filteredChats.filter(chat => {
+                    // Search in title
+                    if (chat.title.toLowerCase().includes(searchTerm)) return true;
+                    
+                    // Search in messages
+                    return chat.messages.some(msg => 
+                        msg.content.toLowerCase().includes(searchTerm)
+                    );
+                });
+            }
+            
+            filteredChats.forEach(chat => {
+                const chatItem = document.createElement("div");
+                chatItem.classList.add("chat-item");
+                if (chat.id === activeChat.id) {
+                    chatItem.classList.add("active");
+                }
+                
+                // Use the first few words from the first user message as the title
+                let chatTitle = chat.title;
+                if (chatTitle === "New Chat") {
+                    const userMessage = chat.messages.find(msg => msg.sender === "user");
+                    if (userMessage) {
+                        chatTitle = userMessage.content.split(' ').slice(0, 4).join(' ') + "...";
+                    }
+                }
+                
+                let categoryIcon = 'fa-user'; // Default to personal icon
+                if (chat.category === 'business') {
+                    categoryIcon = 'fa-briefcase';
+                }
+                
+                chatItem.innerHTML = `
+                    <div class="chat-title">
+                        <i class="fas ${categoryIcon}"></i>
+                        <span>${chatTitle}</span>
+                    </div>
+                    <div class="chat-actions">
+                        <button class="delete-chat" data-id="${chat.id}" title="Delete chat">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                `;
+                
+                chatItem.addEventListener("click", () => loadChat(chat.id));
+                savedChats.appendChild(chatItem);
             });
-
-            const botMessageText = await response.text();
-
-            // Display bot response
-            const botMessage = document.createElement('div');
-            botMessage.className = 'message bot';
-            botMessage.innerHTML = `
-                <div class="avatar">🤖</div>
-                <div class="content">${botMessageText}</div>
-            `;
-            chatBox.appendChild(botMessage);
-
-            // Auto-scroll to the bottom after bot response
-            chatBox.scrollTop = chatBox.scrollHeight;
-
-        } catch (error) {
-            console.error('Error:', error);
-        }
-    }
-
-    function handleKeyPress(event) {
-        if (event.key === "Enter") {
-            sendMessage();
-        }
-    }
-
-    // 🧹 Clear Chat Function
-    function clearChat() {
-        const chatBox = document.getElementById('chat-box');
-        chatBox.innerHTML = `
-            <div class="message bot">
-                <div class="avatar">🤖</div>
-                <div class="content">How can I assist you today?</div>
-            </div>
-        `;
-        chatBox.scrollTop = chatBox.scrollHeight;
-    }
-
-    // Dropdown Menu Toggle
-    function toggleMenu() {
-        const dropdown = document.getElementById('dropdown');
-        dropdown.classList.toggle('show');
-    }
-
-    // Close the menu when clicking outside
-    window.onclick = function(event) {
-        if (!event.target.matches('.menu-icon')) {
-            const dropdown = document.getElementById('dropdown');
-            if (dropdown.classList.contains('show')) {
-                dropdown.classList.remove('show');
+            
+            // Add event listeners to delete buttons
+            document.querySelectorAll('.delete-chat').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const chatId = parseInt(btn.getAttribute('data-id'));
+                    deleteChat(chatId);
+                });
+            });
+            
+            // Show category label if there's an active chat with user messages
+            if (activeChat.messages.some(msg => msg.sender === "user")) {
+                categoryLabel.style.display = "flex";
+                categoryText.textContent = capitalizeFirstLetter(activeChat.category);
+            } else {
+                categoryLabel.style.display = "none";
             }
         }
-    }
+        
+        // Category filter
+        categoryButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                categoryButtons.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                currentFilter = btn.dataset.category;
+                initializeSidebar();
+            });
+        });
+        
+        // Search functionality
+        searchInput.addEventListener('input', () => {
+            initializeSidebar();
+        });
+        
+        // Load a specific chat
+        function loadChat(chatId) {
+            const chat = savedChatsData.find(c => c.id === chatId);
+            if (chat) {
+                activeChat = chat;
+                chatBox.innerHTML = '';
+                
+                chat.messages.forEach(msg => {
+                    addMessage(msg.content, msg.sender, msg.timestamp);
+                });
+                
+                // Update active state in sidebar
+                document.querySelectorAll('.chat-item').forEach(item => {
+                    item.classList.remove('active');
+                    const deleteBtn = item.querySelector('.delete-chat');
+                    if (deleteBtn && parseInt(deleteBtn.getAttribute('data-id')) === chatId) {
+                        item.classList.add('active');
+                    }
+                });
+                
+                // Update category label
+                categoryLabel.style.display = "flex";
+                categoryText.textContent = capitalizeFirstLetter(chat.category);
+                
+                // Close sidebar on mobile after selecting a chat
+                if (window.innerWidth <= 768) {
+                    sidebar.classList.remove("open");
+                    document.body.classList.add("sidebar-collapsed");
+                }
+            }
+        }
+        
+        // Delete a chat
+        function deleteChat(chatId) {
+            savedChatsData = savedChatsData.filter(chat => chat.id !== chatId);
+            localStorage.setItem('legalAdvisorChats', JSON.stringify(savedChatsData));
+            
+            // If the active chat is deleted, load the first available chat or create a new one
+            if (activeChat.id === chatId) {
+                if (savedChatsData.length > 0) {
+                    loadChat(savedChatsData[0].id);
+                } else {
+                    createNewChat();
+                }
+            }
+            
+            initializeSidebar();
+        }
+        
+        // Create a new chat
+        function createNewChat() {
+            // Save the current chat if it has user messages
+            if (activeChat.messages.some(msg => msg.sender === "user")) {
+                saveCurrentChat();
+            }
+            
+            // Create a new active chat
+            activeChat = {
+                id: Date.now(),
+                title: "New Chat",
+                category: "personal", // Changed default to personal
+                messages: [{
+                    content: "Hello! I'm your AI Legal Advisor. How can I assist you today?",
+                    sender: "bot",
+                    timestamp: new Date().toLocaleString()
+                }]
+            };
+            
+            // Clear the chat box and add welcome message
+            chatBox.innerHTML = '';
+            addMessage("Hello! I'm your AI Legal Advisor. How can I assist you today?", "bot", new Date().toLocaleString());
+            
+            // Hide category label for new chats
+            categoryLabel.style.display = "none";
+            
+            // Clear user input field if there's any text
+            userInput.value = "";
+            
+            // Update sidebar to show the new chat as active
+            initializeSidebar();
+            
+            // Focus on the input field so the user can start typing
+            userInput.focus();
+        }
+        
+        // New chat button in sidebar
+        newChatBtn.addEventListener("click", () => {
+            createNewChat();
+            // On mobile, close the sidebar after creating a new chat
+            if (window.innerWidth <= 768) {
+                sidebar.classList.remove("open");
+                document.body.classList.add("sidebar-collapsed");
+            }
+        });
+
+        // New chat button in header
+        headerNewChatBtn.addEventListener("click", () => {
+            createNewChat();
+        });
+        
+        // Save the current chat
+        function saveCurrentChat() {
+            // Don't save empty chats
+            if (!activeChat.messages.some(msg => msg.sender === "user")) {
+                return;
+            }
+            
+            // Check if chat already exists in saved chats
+            const existingIndex = savedChatsData.findIndex(chat => chat.id === activeChat.id);
+            
+            if (existingIndex !== -1) {
+                // Update existing chat
+                savedChatsData[existingIndex] = activeChat;
+            } else {
+                // Add new chat
+                savedChatsData.unshift(activeChat);
+            }
+            
+            // Save to localStorage
+            localStorage.setItem('legalAdvisorChats', JSON.stringify(savedChatsData));
+        }
+        
+        // Toggle timestamps
+        toggleTimestampsBtn.addEventListener('click', () => {
+            showTimestamps = !showTimestamps;
+            document.querySelectorAll('.timestamp').forEach(ts => {
+                ts.style.display = showTimestamps ? 'inline' : 'none';
+            });
+            dropdown.classList.remove('show');
+        });
+        
+        // Export chat as text
+        exportChatBtn.addEventListener('click', () => {
+            // Don't export empty chats
+            if (!activeChat.messages.some(msg => msg.sender === "user")) {
+                alert("Nothing to export. Start a conversation first!");
+                return;
+            }
+            
+            let chatText = "AI Legal Advisor - Chat Export\n";
+            chatText += "================================\n\n";
+            
+            activeChat.messages.forEach(msg => {
+                const sender = msg.sender === 'bot' ? 'AI Legal Advisor' : 'You';
+                chatText += `${sender} (${msg.timestamp}):\n${msg.content}\n\n`;
+            });
+            
+            const blob = new Blob([chatText], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `legal-advisor-chat-${new Date().toISOString().slice(0, 10)}.txt`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        });
+        
+        // Help modal functionality
+        helpBtn.addEventListener('click', () => {
+            helpModal.style.display = 'flex';
+            dropdown.classList.remove('show');
+        });
+        
+        // Category change
+        changeCategoryBtn.addEventListener('click', () => {
+            categoryModal.style.display = 'flex';
+        });
+        
+        // Category option selection
+        categoryOptions.forEach(option => {
+            option.addEventListener('click', () => {
+                const newCategory = option.dataset.category;
+                activeChat.category = newCategory;
+                categoryText.textContent = capitalizeFirstLetter(newCategory);
+                categoryModal.style.display = 'none';
+                saveCurrentChat();
+                initializeSidebar();
+            });
+        });
+        
+        // Close modals
+        document.querySelectorAll('.close-modal').forEach(closeBtn => {
+            closeBtn.addEventListener('click', function() {
+                this.closest('.modal').style.display = 'none';
+            });
+        });
+        
+        // Close modal when clicking outside
+        window.addEventListener('click', function(e) {
+            if (e.target.classList.contains('modal')) {
+                e.target.style.display = 'none';
+            }
+        });
+        
+        // Welcome message function when title is clicked
+        window.showWelcomeMessage = function() {
+            addMessage("I'm your AI Legal Advisor, designed to provide legal information and guidance. While I can help with general legal questions, please consult with a licensed attorney for specific legal advice.", "bot", new Date().toLocaleString());
+            
+            // Add message to active chat
+            activeChat.messages.push({
+                content: "I'm your AI Legal Advisor, designed to provide legal information and guidance. While I can help with general legal questions, please consult with a licensed attorney for specific legal advice.",
+                sender: "bot",
+                timestamp: new Date().toLocaleString()
+            });
+        };
+
+        // Toggle dropdown menu
+        menuIcon.addEventListener("click", () => {
+            dropdown.classList.toggle("show");
+        });
+
+        // Hide dropdown when clicking outside
+        window.addEventListener("click", (e) => {
+            if (!menuIcon.contains(e.target) && !dropdown.contains(e.target)) {
+                dropdown.classList.remove("show");
+            }
+        });
+
+        // Clear chat functionality
+        clearChatBtn.addEventListener("click", () => {
+            chatBox.innerHTML = '';  // Clears the chat
+            dropdown.classList.remove("show");
+
+            // Reset active chat messages
+            activeChat.messages = [{
+                content: "Hello! I'm your AI Legal Advisor. How can I assist you today?",
+                sender: "bot",
+                timestamp: new Date().toLocaleString()
+            }];
+            
+            // Add default message again after clearing
+            addMessage("Hello! I'm your AI Legal Advisor. How can I assist you today?", "bot", new Date().toLocaleString());
+            
+            // Hide category label
+            categoryLabel.style.display = "none";
+        });
+
+        // Voice input functionality (placeholder)
+        voiceBtn.addEventListener('click', () => {
+            alert('Voice input feature coming soon!');
+        });
+        
+        // File attachment (placeholder)
+        attachBtn.addEventListener('click', () => {
+            alert('File attachment feature coming soon!');
+        });
+
+        // Send message on button click
+        sendBtn.addEventListener("click", () => {
+            sendMessage();
+        });
+
+        // Handle "Enter" key press
+        window.handleKeyPress = function (event) {
+            if (event.key === "Enter" && !event.shiftKey) {
+                event.preventDefault(); // Prevent default Enter behavior
+                const message = userInput.value.trim();
+                if (message !== "") {
+                    // Store the message and clear input immediately
+                    const userMessage = message;
+                    userInput.value = ""; // Clear input right away
+                    
+                    // Then process the message
+                    processMessage(userMessage);
+                }
+            }
+        };
+
+        // Process message after input is cleared
+        async function processMessage(message) {
+            // Show category label when user starts a conversation
+            if (!activeChat.messages.some(msg => msg.sender === "user")) {
+                categoryLabel.style.display = "flex";
+                categoryText.textContent = capitalizeFirstLetter(activeChat.category);
+            }
+            
+            const timestamp = new Date().toLocaleString();
+            addMessage(message, "user", timestamp);
+            
+            // Add user message to active chat
+            activeChat.messages.push({
+                content: message,
+                sender: "user",
+                timestamp: timestamp
+            });
+            
+            // Save chat after user message
+            saveCurrentChat();
+            
+            // Update sidebar to reflect new chat title
+            initializeSidebar();
+            
+            // Show typing indicator
+            const typingIndicator = document.createElement("div");
+            typingIndicator.classList.add("message", "bot", "typing-indicator");
+            
+            const avatar = document.createElement("div");
+            avatar.classList.add("avatar", "bot-avatar");
+            avatar.innerHTML = `<i class="fas fa-robot"></i>`;
+            
+            const messageContainer = document.createElement("div");
+            messageContainer.classList.add("message-container");
+            
+            const messageHeader = document.createElement("div");
+            messageHeader.classList.add("message-header");
+            messageHeader.innerHTML = `
+                <span class="sender-name">AI Legal Advisor</span>
+                <span class="timestamp" style="display: ${showTimestamps ? 'inline' : 'none'};">${new Date().toLocaleString()}</span>
+            `;
+            
+            const contentDiv = document.createElement("div");
+            contentDiv.classList.add("content", "bot-content");
+            contentDiv.innerHTML = `<span class="typing-dots"><span>.</span><span>.</span><span>.</span></span>`;
+            
+            messageContainer.appendChild(messageHeader);
+            messageContainer.appendChild(contentDiv);
+            
+            typingIndicator.appendChild(avatar);
+            typingIndicator.appendChild(messageContainer);
+            chatBox.appendChild(typingIndicator);
+            chatBox.scrollTop = chatBox.scrollHeight;
+
+            try {
+                // Call Flask backend to get LLM response
+                const response = await fetch("/get", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/x-www-form-urlencoded"
+                    },
+                    body: new URLSearchParams({ msg: message })
+                });
+
+                const botResponse = await response.text();
+
+                const responseTimestamp = new Date().toLocaleString();
+
+                // Remove typing indicator
+                chatBox.removeChild(typingIndicator);
+
+                // Display LLM response
+                addMessage(botResponse, "bot", responseTimestamp);
+
+                // Add bot response to active chat
+                activeChat.messages.push({
+                    content: botResponse,
+                    sender: "bot",
+                    timestamp: responseTimestamp
+                });
+
+                
+                // Save chat after bot response
+                saveCurrentChat();
+
+            } catch (error) {
+                console.error("Error sending message:", error);
+                
+                // Remove typing indicator
+                chatBox.removeChild(typingIndicator);
+                
+                const errorMsg = "Sorry, I couldn't process your request.";
+                const errorTimestamp = new Date().toLocaleString();
+                addMessage(errorMsg, "bot", errorTimestamp);
+                
+                // Add error message to active chat
+                activeChat.messages.push({
+                    content: errorMsg,
+                    sender: "bot",
+                    timestamp: errorTimestamp
+                });
+                
+                // Save chat after error message
+                saveCurrentChat();
+            }
+        }
+
+        // Send message functionality 
+        async function sendMessage() {
+            const userInputText = userInput.value.trim();
+            if (userInputText !== "") {
+                // Clear the input immediately
+                userInput.value = ""; 
+                
+                // Then process the message
+                processMessage(userInputText);
+            }
+        }
+
+        // Add message to chat box
+        function addMessage(content, sender, timestamp) {
+            const messageDiv = document.createElement("div");
+            messageDiv.classList.add("message", sender);
+
+            const avatar = document.createElement("div");
+            avatar.classList.add("avatar");
+
+            if (sender === "user") {
+                avatar.classList.add("user-avatar");
+                avatar.innerHTML = `<i class="fas fa-briefcase"></i>`; // User icon is briefcase
+            } else {
+                avatar.classList.add("bot-avatar");
+                avatar.innerHTML = `<i class="fas fa-robot"></i>`;
+            }
+
+            const messageContainer = document.createElement("div");
+            messageContainer.classList.add("message-container");
+            
+            const messageHeader = document.createElement("div");
+            messageHeader.classList.add("message-header");
+            messageHeader.innerHTML = `
+                <span class="sender-name">${sender === 'bot' ? 'AI Legal Advisor' : 'You'}</span>
+                <span class="timestamp" style="display: ${showTimestamps ? 'inline' : 'none'};">${timestamp}</span>
+            `;
+            
+            const contentDiv = document.createElement("div");
+            contentDiv.classList.add("content");
+            
+            if (sender === "user") {
+                contentDiv.classList.add("user-content");
+            } else {
+                contentDiv.classList.add("bot-content");
+            }
+
+            contentDiv.textContent = content;
+            
+            const messageActions = document.createElement("div");
+            messageActions.classList.add("message-actions");
+            
+            // Add message action buttons
+            if (sender === "bot") {
+                messageActions.innerHTML = `
+                    <button class="copy-btn" title="Copy to clipboard">
+                        <i class="fas fa-copy"></i>
+                    </button>
+                    <button class="thumbs-up-btn" title="Helpful">
+                        <i class="far fa-thumbs-up"></i>
+                    </button>
+                    <button class="thumbs-down-btn" title="Not helpful">
+                        <i class="far fa-thumbs-down"></i>
+                    </button>
+                `;
+            }
+
+            messageContainer.appendChild(messageHeader);
+            messageContainer.appendChild(contentDiv);
+            messageContainer.appendChild(messageActions);
+
+            messageDiv.appendChild(avatar);
+            messageDiv.appendChild(messageContainer);
+            chatBox.appendChild(messageDiv);
+
+            // Add event listeners to action buttons
+            if (sender === "bot") {
+                const copyBtn = messageDiv.querySelector(".copy-btn");
+                copyBtn.addEventListener("click", () => {
+                    navigator.clipboard.writeText(content).then(() => {
+                        copyBtn.innerHTML = '<i class="fas fa-check"></i>';
+                        setTimeout(() => {
+                            copyBtn.innerHTML = '<i class="fas fa-copy"></i>';
+                        }, 2000);
+                    });
+                });
+                
+                // Add functionality for thumbs-up and thumbs-down
+                const thumbsUpBtn = messageDiv.querySelector(".thumbs-up-btn");
+                const thumbsDownBtn = messageDiv.querySelector(".thumbs-down-btn");
+                
+                thumbsUpBtn.addEventListener("click", () => {
+                    thumbsUpBtn.classList.toggle("active");
+                    if (thumbsDownBtn.classList.contains("active")) {
+                        thumbsDownBtn.classList.remove("active");
+                    }
+                });
+                
+                thumbsDownBtn.addEventListener("click", () => {
+                    thumbsDownBtn.classList.toggle("active");
+                    if (thumbsUpBtn.classList.contains("active")) {
+                        thumbsUpBtn.classList.remove("active");
+                    }
+                });
+            }
+
+            chatBox.scrollTop = chatBox.scrollHeight;  // Auto-scroll to the bottom
+        }
+        
+        // Helper function to capitalize first letter
+        function capitalizeFirstLetter(string) {
+            return string.charAt(0).toUpperCase() + string.slice(1);
+        }
+        
+        // Initialize the sidebar on page load
+        initializeSidebar();
+    });
 </script>
 
 </body>
