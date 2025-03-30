@@ -47,10 +47,7 @@ pip install -e .
 
 ### ✅ **Step 4: Install Sentence Transformer Model from Hugging Face**
 Download the **Hugging Face** embedding model:
-```python
-from sentence_transformers import SentenceTransformer
-model = SentenceTransformer('sentence-transformers/all-MiniLM-L6-v2')
-```
+sentence-transformers/all-MiniLM-L6-v2
 - This model generates **384-dimensional embeddings**.
 
 ---
@@ -93,7 +90,7 @@ python app.py
 - 🗄️ **Pinecone**: Vector storage for efficient similarity search.
 - 🤖 **Groq**: LLM for generating legal responses.
 - 🔥 **Hugging Face**: Embedding model for creating vector representations.
-
+- 🌐 **HTML, CSS**: User interface design.
 ---
 
 ## ⚙️ **License**
