@@ -70,7 +70,7 @@ Download the **Hugging Face** embedding model:
 
 ### ✅ **Step 7: Download the Dataset from Google Drive**
 Download the dataset from Google Drive:  
-[📂 Dataset Link](https://drive.google.com/drive/folders/1iwhpGZ__NUcSC1eDyoslQOC5SyJO59-r?usp=drive_link)
+📂 [Dataset Link](https://drive.google.com/drive/folders/1iwhpGZ__NUcSC1eDyoslQOC5SyJO59-r?usp=drive_link)
 
 1. Place the dataset files into the `/data` directory.
 2. Ensure that your application reads and processes the dataset correctly.
