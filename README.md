@@ -45,7 +45,7 @@ pip install -requirements.txt
 
 ---
 
-### ✅ **Step 3: Install the Project (Optional)**
+### ✅ **Step 4: Install the Project (Optional)**
 Install the full project:
 ```bash
 pip install -e .
@@ -53,14 +53,14 @@ pip install -e .
 
 ---
 
-### ✅ **Step 4: Install Sentence Transformer Model from Hugging Face**
+### ✅ **Step 5: Install Sentence Transformer Model from Hugging Face**
 Download the **Hugging Face** embedding model:
 - **sentence-transformers/all-MiniLM-L6-v2**
 - This model generates **384-dimensional embeddings**.
 
 ---
 
-### ✅ **Step 5: Set Up Pinecone for Vector Storage**
+### ✅ **Step 6: Set Up Pinecone for Vector Storage**
 1. Go to [Pinecone](https://www.pinecone.io) and create an account.
 2. Create a new index with the following configuration:
    - **Dimensions:** `384`
@@ -69,14 +69,14 @@ Download the **Hugging Face** embedding model:
 
 ---
 
-### ✅ **Step 6: Create a Groq Account to Use Llama3-8b-8192 Model**
+### ✅ **Step 7: Create a Groq Account to Use Llama3-8b-8192 Model**
 1. Go to [Groq](https://groq.com) and create an account.
 2. Use the **llama3-8b-8192** model in your application.
 3. Add your **Groq API key** to the environment variables or config file.
 
 ---
 
-### ✅ **Step 7: Download the Dataset from Google Drive**
+### ✅ **Step 8: Download the Dataset from Google Drive**
 Download the dataset from Google Drive:  
 📂 [Dataset Link](https://drive.google.com/drive/folders/1iwhpGZ__NUcSC1eDyoslQOC5SyJO59-r?usp=drive_link)
 
@@ -85,7 +85,7 @@ Download the dataset from Google Drive:
 
 ---
 
-### ✅ **Step 8: Run the Application in VS Code Terminal**
+### ✅ **Step 9: Run the Application in VS Code Terminal**
 Start the chatbot by running the following command:
 ```bash
 python app.py
