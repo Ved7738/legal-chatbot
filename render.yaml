@@ -1,7 +1,7 @@
 services:
   - type: web
     name: lawbot
-    env: python
+    env: python3
     plan: free
     region: oregon
     buildCommand: "pip install -r requirements.txt"
