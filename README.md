@@ -40,6 +40,14 @@ source lawbot/bin/activate
 ### ✅ **Step 3: Install the Project Requirements**
 Install the project dependencies:
 ```bash
+pip install -requirements.txt
+```
+
+---
+
+### ✅ **Step 3: Install the Project (Optional)**
+Install the full project:
+```bash
 pip install -e .
 ```
 
