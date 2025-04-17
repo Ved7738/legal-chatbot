@@ -14,7 +14,6 @@ list_of_files = [
     'LICENCE',
     'README.md',
     'requirements.txt',
-    'render.yaml',
     'setup.py',
     'template.py',
     'app.py',
