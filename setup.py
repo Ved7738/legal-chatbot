@@ -20,7 +20,7 @@ setup(
         'flask==3.1.0',
         'pypdf==5.4.0',
         'python-dotenv==1.1.0',
-        'pinecone[grpc]==6.0.2'
+        'gunicorn'
     ],
     classifiers=[                        
         'Programming Language :: Python :: 3',
