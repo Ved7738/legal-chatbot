@@ -1,21 +1,53 @@
 from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_community.document_loaders import PyPDFLoader, DirectoryLoader
-from langchain_community.embeddings import HuggingFaceBgeEmbeddings
+from langchain_unstructured import UnstructuredLoader
+import logging
 
 def load_pdf_file(data):
-    loader = DirectoryLoader(
-        path=data,
-        glob="*.pdf",
-        loader_cls=PyPDFLoader
-    )
-    documents = loader.load()
-    return documents 
+    try:
+        loader = DirectoryLoader(path=data, glob="*.pdf", loader_cls=PyPDFLoader)
+        return loader.load()
+    except Exception as e:
+        logging.error(f"PDF load error: {str(e)}")
+        raise
 
-def text_split(extracted_data):
-    text_splitter = RecursiveCharacterTextSplitter(chunk_size=500, chunk_overlap=20)
-    text_chunks = text_splitter.split_documents(extracted_data)
-    return text_chunks
+def text_split(documents):
+    splitter = RecursiveCharacterTextSplitter(
+        chunk_size=500,
+        chunk_overlap=20,
+        separators=["\n\n", "\n", " ", ""]
+    )
+    return splitter.split_documents(documents)
 
 def download_hugging_face_embeddings():
-    embeddings = HuggingFaceBgeEmbeddings(model_name='sentence-transformers/all-MiniLM-L6-v2')
-    return embeddings
+    return HuggingFaceEmbeddings(
+        model_name='sentence-transformers/all-MiniLM-L6-v2',
+        model_kwargs={'device': 'cpu'}
+    )
+def clean_metadata(documents):
+    """Strip unsupported Pinecone metadata fields like dicts, lists, None."""
+    cleaned = []
+    for doc in documents:
+        meta = {}
+        for key, value in doc.metadata.items():
+            if isinstance(value, (str, int, float, bool)) or (
+                isinstance(value, list) and all(isinstance(i, str) for i in value)
+            ):
+                meta[key] = value
+        doc.metadata = meta
+        cleaned.append(doc)
+    return cleaned
+
+
+def process_uploaded_file(file_path):
+    try:
+        loader = UnstructuredLoader(
+            file_path,
+            mode="elements",
+            strategy="fast"
+        )
+        documents = loader.load()
+        return clean_metadata(documents)  # Sanitize before returning
+    except Exception as e:
+        raise RuntimeError(f"Failed to process file: {str(e)}")
