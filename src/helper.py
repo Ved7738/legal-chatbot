@@ -1,7 +1,6 @@
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_huggingface import HuggingFaceEmbeddings
-from langchain_community.document_loaders import PyPDFLoader, DirectoryLoader
-from langchain_unstructured import UnstructuredLoader
+from langchain_community.document_loaders import PyPDFLoader, DirectoryLoader, UnstructuredFileLoader
 import logging
 
 def load_pdf_file(data):
@@ -25,6 +24,7 @@ def download_hugging_face_embeddings():
         model_name='sentence-transformers/all-MiniLM-L6-v2',
         model_kwargs={'device': 'cpu'}
     )
+
 def clean_metadata(documents):
     """Strip unsupported Pinecone metadata fields like dicts, lists, None."""
     cleaned = []
@@ -39,14 +39,9 @@ def clean_metadata(documents):
         cleaned.append(doc)
     return cleaned
 
-
 def process_uploaded_file(file_path):
     try:
-        loader = UnstructuredLoader(
-            file_path,
-            mode="elements",
-            strategy="fast"
-        )
+        loader = UnstructuredFileLoader(file_path)
         documents = loader.load()
         return clean_metadata(documents)  # Sanitize before returning
     except Exception as e:
